@@ -72,7 +72,6 @@ const App = () => {
 
   return (
     <div>
-      <div>debug: {newName}</div>
       <h2>Phonebook</h2>
       <Filter filter={filter} setNewFilter={setNewFilter} />
       <h3>add a new person</h3>
