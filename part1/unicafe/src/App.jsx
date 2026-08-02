@@ -3,24 +3,16 @@ import { useState } from 'react'
 
 const Header = ({ header }) => {
     return (
-        <>
-            <h1>{header.text}</h1>
-        </>
+        <h1>{header.text}</h1>
     )
 
 }
 
 
-const Button = ({ button, stateTotal }) => {
-    const onClick = ({ button, stateTotal }) => {
+const Button = ({ onClick, button }) => {
 
-        button.counterFunc(button.counter + 1)
-        stateTotal.counterFunc(stateTotal.counter + 1)
-    }
     return (
-        <>
-            <button onClick={() => onClick({ button, stateTotal })}>{button.name}</button>
-        </>
+        <button onClick={onClick}>{button.name}</button>
     )
 }
 
@@ -106,12 +98,24 @@ const App = () => {
         }
 
     }
+
+    const updateCount = (i) => {
+        const button = feedback.buttons[i]
+        const state = feedback.totalCounter
+        const onClick = () => {
+
+            button.counterFunc(button.counter + 1)
+            state.counterFunc(state.counter + 1)
+        }
+        return onClick
+    }
+
     return (
         <div>
             <Header header={feedback} />
-            <Button button={feedback.buttons[0]} stateTotal={feedback.totalCounter} />
-            <Button button={feedback.buttons[1]} stateTotal={feedback.totalCounter} />
-            <Button button={feedback.buttons[2]} stateTotal={feedback.totalCounter} />
+            <Button onClick={updateCount(0)} button={feedback.buttons[0]} />
+            <Button onClick={updateCount(1)} button={feedback.buttons[1]} />
+            <Button onClick={updateCount(2)} button={feedback.buttons[2]} />
 
             <Stats feedback={feedback} />
         </div>
