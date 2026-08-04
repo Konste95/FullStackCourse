@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 
 import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = ({ filter, setNewFilter }) => {
     return (
@@ -37,18 +38,37 @@ const NewPersonForm = ({ addToPhoneBook, newName, newPhoneNumber, setNewName, se
 }
 
 
-const Persons = ({ filterPersons }) => {
+const Persons = ({ persons, setLastDeleted }) => {
     return (
         <ol>
-            {filterPersons.map(person => <Person key={person.id} person={person} />)}
+            {persons.map(person => <Person key={person.id} person={person} setLastDeleted={setLastDeleted} />)}
         </ol>
     )
 
 }
 
-const Person = ({ person }) => {
-    return (<li>{person.name} {person.number}</li>)
+const Person = ({ person, setLastDeleted }) => {
+    const deletePerson = (setLastDeleted, person) => {
+        if (window.confirm(`Are you sure you want to delete '${person.name}'`)) {
+
+            personService._delete(person.id).then(deletedPerson => setLastDeleted(deletedPerson))
+        }
+
+
+    }
+
+
+    return (
+        <>
+            <li>
+                {person.name} {person.number}
+            </li>
+            <button onClick={() => deletePerson(setLastDeleted, person)}>
+                delete
+            </button>
+        </>)
 }
+
 
 const App = () => {
 
@@ -57,37 +77,46 @@ const App = () => {
     const [persons, setPersons] = useState([])
     const [newPhoneNumber, setNewPhoneNumber] = useState('')
     const [filter, setNewFilter] = useState('')
+    const [deletedPerson, setLastDeleted] = useState('')
     useEffect(() => {
-        console.log('effect')
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
-            })
-    }, [])
+        personService.getAll().then(allPersons => {
+            setPersons(allPersons)
+        })
+    }, [deletedPerson])
 
 
     const addToPhoneBook = (event) => {
         event.preventDefault()
-        if (persons.map(person => person.name).includes(newName)) {
-            window.alert(`This name (${newName}) has already been added to the Phone Book`)
-        }
         const newPerson = {
-            name: newName,
-            number: newPhoneNumber,
+            name: newName.trim(),
+            number: newPhoneNumber.trim(),
             id: persons.length + 1
         }
-        setPersons(persons.concat(newPerson))
-        setNewName('')
-        setNewPhoneNumber('')
+        if (persons.map(person => person.name).includes(newPerson.name)) {
+
+            if (window.confirm(`'${newPerson.name}' already exists in the phone book. Do you want to update the number?`)) {
+                const existingPersonId = persons.find(person => person.name === newPerson.name).id
+                personService.update(existingPersonId, newPerson).then
+                    (newPerson => setPersons(persons.map(person => person.id === newPerson.id ? { ...newPerson, id: existingPersonId } : person)))
+            }
+            setNewName('')
+            setNewPhoneNumber('')
+
+        }
+        else {
+            personService.create(newPerson).then(person => {
+                setPersons(persons.concat(person))
+            }
+
+            )
+            setNewName('')
+            setNewPhoneNumber('')
+
+        }
 
     }
 
-
-    console.log(persons)
-    const filterPersons = persons.filter(person => person.name.toLowerCase().startsWith(filter))
-
-    console.log(filterPersons)
+    const filterPersons = persons.filter(person => person.name.toLowerCase().startsWith(filter.trim()))
     return (
         <div>
             <h2>Phonebook</h2>
@@ -95,7 +124,7 @@ const App = () => {
             <h3>add a new person</h3>
             <NewPersonForm addToPhoneBook={addToPhoneBook} newName={newName} newPhoneNumber={newPhoneNumber} setNewName={setNewName} setNewPhoneNumber={setNewPhoneNumber} />
             <h2>Numbers</h2>
-            <Persons filterPersons={filterPersons} />
+            <Persons persons={filterPersons} setLastDeleted={setLastDeleted} />
         </div>
     )
 }
