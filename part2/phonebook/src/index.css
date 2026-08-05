@@ -1,0 +1,20 @@
+h1 {
+  color: green;
+
+}
+
+.success {
+  color: blue;
+  background-color: grey;
+  border: solid;
+  border-color: darkolivegreen;
+  font-size: 25px;
+}
+
+.error {
+  color: red;
+  background-color: yellow;
+  border: solid;
+  border-color: darkred;
+  font-size: 25px;
+}
