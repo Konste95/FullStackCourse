@@ -6,6 +6,7 @@ morgan.token('body', function getBody(req) {
     return JSON.stringify(req.body)
 })
 
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"))
 let persons = [
@@ -69,7 +70,7 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    if (!body.name || !body.phone) {
+    if (!body.name || !body.number) {
 
         return response.status(400).json({
             error: 'content missing'
@@ -82,13 +83,14 @@ app.post('/api/persons', (request, response) => {
     }
     const person = {
         name: body.name,
-        phone: body.phone,
+        number: body.number,
         id: generateId()
     }
 
     persons = persons.concat(person)
     response.json(person)
 })
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
