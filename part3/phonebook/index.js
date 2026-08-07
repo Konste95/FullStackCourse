@@ -13,21 +13,17 @@ morgan.token('body', function getBody(req) {
 
 app.use(express.static('dist'))
 app.use(express.json())
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/', (request, response) => {
+app.get('/', (_request, response) => {
     response.send('<h1>Hello world!</h1>')
 })
 
-app.get('/api/persons/', (request, response) => {
+app.get('/api/persons/', (_request, response) => {
+
     Person.find({}).then(persons => {
         response.json(persons)
     })
-
-})
-
-app.get('/api/persons/info', (request, response) => {
-    response.send(`<h1>Phonebook has info for ${persons.length} people</h1> <h2>${new Date(Date.now()).toString()}</h2>`)
 
 })
 
@@ -47,7 +43,7 @@ app.get('/api/persons/info/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
@@ -57,10 +53,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 })
 
-const generateId = () => {
-    id = Math.floor(Math.random() * 1000)
-    return String(id)
-}
+
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
@@ -75,9 +68,9 @@ app.post('/api/persons', (request, response, next) => {
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-    const { name, number } = request.body
-    console.log(request.body)
-    query = { "name": { "$eq": request.body.name } }
+    const number = request.body.number
+
+    const query = { 'name': { '$eq': request.body.name } }
 
 
     Person.findOne(query)
@@ -87,7 +80,6 @@ app.put('/api/persons/:id', (request, response, next) => {
             }
 
             person.number = number
-            console.log(person)
 
             return person.save().then((updatedPerson) => {
                 response.json(updatedPerson)
@@ -96,14 +88,13 @@ app.put('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (_request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+const errorHandler = (error, _request, response, next) => {
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
