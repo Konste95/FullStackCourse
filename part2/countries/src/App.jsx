@@ -13,6 +13,7 @@ const CountryInfo = ({ country, weatherInfo }) => {
 
   const flagImgAlt = country.flags.alt
   const languages = country.languages
+  const weatherIcon = `${weatherIconUrl}${weatherInfo.weather[0].icon}.png`
   return (
     <>
       <h1>{country.name.common}</h1>
@@ -21,7 +22,8 @@ const CountryInfo = ({ country, weatherInfo }) => {
       <ol>{Object.values(languages).map((lang, index) => <li key={index}>{lang}</li>)}</ol>
       <img src={flagImg} alt={flagImgAlt} />
       <h1>Temperature overview</h1>
-      <p>Temperature: {Math.round((weatherInfo.main.temp - 273.1) * 100) / 100} Celcius</p>
+      <p>Temperature: {Math.round((weatherInfo.main.temp - 273.1) * 10) / 10} Celcius</p>
+      <img src={weatherIcon}></img>
     </>
   )
 
@@ -67,14 +69,9 @@ function App() {
 
 
         countryService.getWeather(country.capital[0]).then(weather => {
-          countryService.getWeatherIcon(weather.weather[0].icon).then(weatherIcon => {
-            console.log(weather)
+          setWeatherInfo(weather)
 
-            weather.icon = weatherIcon
-            setWeatherInfo(weather)
-            console.log(weatherInfo)
-          }
-          )
+
         })
 
       } else {

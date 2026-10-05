@@ -1,7 +1,9 @@
 import axios from 'axios'
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/api/'
 const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather'
-const api_key = import.meta.env.VITE_OPEN_WEATHER_API_KEY
+const api_key = import.meta.env.VITE_SOME_KEY
+console.log(api_key)
+
 
 const getAll = () => {
   const request = axios.get(baseUrl + 'all')
@@ -21,10 +23,6 @@ const getWeather = (city) => {
   return request.then(response => response.data)
 }
 
-const getWeatherIcon = (code) => {
-  const request = axios.get(`'${weatherIconUrl}'${code}'.png`)
-  return request.then(response => response.data)
-}
 
 export default {
   getAll,
