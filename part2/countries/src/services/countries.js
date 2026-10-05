@@ -1,8 +1,7 @@
 import axios from 'axios'
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/api/'
 const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather'
-const api_key = import.meta.env.VITE_SOME_KEY
-console.log(api_key)
+const api_key = import.meta.env.VITE_OPEN_WEATHER_KEY
 
 
 const getAll = () => {
